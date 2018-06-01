@@ -28,7 +28,7 @@ end
 
 to initialize-turtle-vars
   ask turtles [
-    set speed 0.5
+    set speed 0.5 + random 0.5
     set target nobody
     set immediate-target nobody
     set visited-checkpoints []
@@ -157,11 +157,9 @@ end
 to move
   update-goals
 
-  ifelse immediate-target != nobody [
+  if immediate-target != nobody [
     set heading towards immediate-target
     fd speed
-  ] [
-    ; TODO: herding behavior
   ]
 end
 
@@ -281,7 +279,7 @@ end
 
 ; picking an exit
 to-report exit-desirability [ p ]
-  let c -4.5 ; crowdedness is bad - I might not be able to get to the exit quickly
+  let c -2 ; crowdedness is bad - I might not be able to get to the exit quickly
   let d -1 ; closer exits are better
 
   report c * crowdedness p + d * distance-from-me p
@@ -306,7 +304,7 @@ to-report immediate-target-desirability [ p ]
 end
 
 to-report crowdedness [ p ]
-  report [count turtles in-radius 2] of p
+  report [count turtles in-radius 5] of p
 end
 
 to-report wall-proximity [ p ]
@@ -430,8 +428,8 @@ SLIDER
 number-of-people
 number-of-people
 1
-200
-29.0
+300
+300.0
 1
 1
 NIL
@@ -456,7 +454,7 @@ CHOOSER
 building-type
 building-type
 "open room" "one wall" "two walls"
-2
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
