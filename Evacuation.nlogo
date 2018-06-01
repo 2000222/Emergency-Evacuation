@@ -167,7 +167,7 @@ to update-goals
   ]
 
   if target != nobody [
-    set immediate-target min-one-of other patches in-radius 2 with [ (pcolor = ground-color or pcolor = door-color) and [not anything-blocking? myself] of myself ] [distance [target] of myself]
+    set immediate-target min-one-of neighbors with [ (pcolor != wall-color) and [ not anything-blocking? myself] of myself ] [distance [target] of myself]
   ]
 end
 
@@ -187,7 +187,7 @@ to-report obstacles-blocking? [ p ]
   set heading towards p
 
   while [[pcolor] of patch-here = ground-color and patch-here != p] [
-    fd 1
+    fd 0.5
   ]
 
   if [pcolor] of patch-here = wall-color and [not on-edge] of patch-here [
@@ -336,7 +336,7 @@ number-of-people
 number-of-people
 1
 200
-95.0
+180.0
 1
 1
 NIL
