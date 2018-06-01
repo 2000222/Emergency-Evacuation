@@ -12,7 +12,7 @@ globals [
 turtles-own [
   speed
   target
-  exits-seen
+  immediate-target
 ]
 
 to initialize-globals
@@ -28,7 +28,7 @@ to initialize-turtle-vars
   ask turtles [
     set speed 0.5
     set target nobody
-    set exits-seen []
+    set immediate-target nobody
   ]
 end
 
@@ -119,7 +119,7 @@ to make-people
 
     setxy x y
 
-    ; the following line is currently commented out because it's easier to see heading with regular turtles
+    ; can more easily see heading with regular turtles
 ;    set shape "person"
   ]
 end
@@ -129,23 +129,12 @@ end
 to move
   update-goals
 
-  ifelse target != nobody [
-;    print patch-desirability target
-    set heading towards target
+  ifelse immediate-target != nobody [
+    set heading towards immediate-target
     fd speed
-;    if colliding-with-something? [
-;      fd 0 - speed
-;    ]
   ] [
-;    follow-crowd
+    ; TODO: herding behavior
   ]
-
-;  ifelse immediate-target != nobody [
-;    set heading towards immediate-target
-;    fd speed
-;  ] [
-;    follow-crowd
-;  ]
 end
 
 to maybe-exit
@@ -155,92 +144,61 @@ to maybe-exit
   ]
 end
 
-to maybe-fd
-  fd speed
-  if [pcolor] of patch-here = wall-color [
-    fd 0 - speed
-  ]
-end
-
-;to follow-crowd ; TODO fix?
-;  let visible-people other turtles with [ [visible? [patch-here] of myself] of myself ]
-;  let n count visible-people
-;
-;  if n > 5 [ set n 5 ]
-;
-;  let avg-heading ifelse-value (n < 2) [heading + 20 + random 20] [mean [heading] of min-n-of n visible-people [distance myself]]
-;
-;  set heading avg-heading
-;  maybe-fd
-;end
-
 to update-goals
-  if length exits-seen != length exits [
-    let visible-exits filter obstacles-blocking? exits
-    foreach visible-exits [ x ->
-      if not member? x exits-seen [
-        set exits-seen lput x exits-seen
-      ]
-    ]
-  ]
-  let potential-targets patches with [ pcolor != wall-color and [not anything-blocking? myself] of myself ]
-  let best max-one-of patch-set potential-targets [patch-desirability [myself] of myself]
-
-  if target = nobody or patch-desirability best > patch-desirability target [
-    set target best
+  if patch-here = immediate-target [
+     set immediate-target nobody
   ]
 
+  ;; pick an exit to target
+  let visible-exits filter visible? exits
+  set target min-one-of patch-set visible-exits [distance myself] ; avoid crowdedness, too, if there are multiple exits to choose from :)
+
+  ;; if I don't see any exits, find a checkpoint
+  if target = nobody [
+    let visible-checkpoints filter visible? checkpoints
+    set target min-one-of patch-set visible-checkpoints [distance myself]
+  ]
+
+  ;; if I don't see any checkpoints either, pick somewhere to go based on heuristic
+  ;; Here, crowdedness is good, since I don't know where I'm going
+  if target = nobody [
+    let visible-patches other patches in-radius 5 with [ pcolor = ground-color and [visible? myself] of myself ]
+    set target max-one-of patch-set visible-patches [[patch-desirability myself] of myself]
+  ]
+
+  if target != nobody [
+    set immediate-target min-one-of other patches in-radius 2 with [ (pcolor = ground-color or pcolor = door-color) and [not anything-blocking? myself] of myself ] [distance [target] of myself]
+  ]
 end
 
 ;; HELPER FUNCTIONS
 
-to-report patch-desirability [ p ]
-  ; attributes to score on
-  let crwd crowdedness p
-  let wall wall-proximity p
-  let dist distance-from-me p
-  let chkp checkpoint-or-not p
-  let exit exit-or-not p
+; turtle reporter
+to-report visible? [ p ]
+  report not obstacles-blocking? p
+end
 
-  ; weights
-  let crwdw 1
-  let wallw -2
-  let distw 1
-  let chkpw 50
-  let exitw 1000
+to-report obstacles-blocking? [ p ]
+  let res false
+  let old-heading heading
+  let old-x xcor
+  let old-y ycor
 
-  if exit = 1 [
-    set distw 0 - distw
+  set heading towards p
+
+  while [[pcolor] of patch-here = ground-color and patch-here != p] [
+    fd 1
   ]
 
-  report crwdw * crwd + wallw * wall + distw * dist + chkpw * chkp + exitw * exit
+  if [pcolor] of patch-here = wall-color and [not on-edge] of patch-here [
+    set res true
+  ]
+
+  setxy old-x old-y
+  set heading old-heading
+
+  report res
 end
-
-to-report crowdedness [ p ]
-  report [count turtles in-radius 2] of p
-end
-
-to-report wall-proximity [ p ]
-  report [count patches in-radius 2 with [pcolor = wall-color]] of p
-end
-
-to-report distance-from-me [ p ]
-  report [distance myself] of p
-end
-
-to-report checkpoint-or-not [ p ]
-  report ifelse-value (member? p checkpoints) [1] [0]
-end
-
-to-report exit-or-not [ p ]
-  report ifelse-value (member? p exits) [1] [0]
-end
-
-to-report distance-to-exits-seen [ p ]
-
-end
-
-; turtle reporter
 
 to-report anything-blocking? [ p ]
   let old-heading heading
@@ -272,45 +230,35 @@ to-report anything-blocking? [ p ]
 end
 
 to-report colliding-with-something?
-  report [pcolor] of patch-here = wall-color or any? other turtles in-radius 1 or any? patches in-radius 1.5 with [pcolor = wall-color]
+  report [pcolor] of patch-here = wall-color or any? other turtles in-radius 0.5 or any? patches in-radius 0.9 with [pcolor = wall-color]
 end
 
+; calculate desirability when I can't see any exits or checkpoints.
+to-report patch-desirability [ p ]
+  let c 2 ; crowdedness is good! since I don't know where to go
+  let w -1 ; walls are useless - stay away
+  let d 1 ; further away is better - I need to get somewhere I can actually see checkpoints/exits
 
-to-report obstacles-blocking? [ p ]
-  let res false
-  let old-heading heading
-  let old-x xcor
-  let old-y ycor
-
-  set heading towards p
-
-  while [[pcolor] of patch-here = ground-color and patch-here != p] [
-    fd 1
-  ]
-
-  if ([pcolor] of patch-here = wall-color and [not on-edge] of patch-here) [
-    set res true
-  ]
-
-  setxy old-x old-y
-  set heading old-heading
-
-  report res
+  report c * crowdedness p + w * wall-proximity p + d * distance-from-me p
 end
 
-to-report heading-difference [c d] ; current and desired headings
-  let l 0 ; left
-  let r 0 ; right
+to-report exit-desirability [ p ]
+  let c -4 ; crowdedness is bad - I might not be able to get to the exit quickly
+  let d 1 ; closer exits are better
 
-  ifelse d >= c [
-    set l 360 - d + c
-    set r d - c
-  ] [
-    set l c - d
-    set r 360 - c + d
-  ]
+  report c * crowdedness p + d * distance-from-me p
+end
 
-  report min (list l r)
+to-report crowdedness [ p ]
+  report [count turtles in-radius 2] of p
+end
+
+to-report wall-proximity [ p ]
+  report [count patches in-radius 2 with [pcolor = wall-color]] of p
+end
+
+to-report distance-from-me [ p ]
+  report [distance myself] of p
 end
 
 ; patch reporter
@@ -388,7 +336,7 @@ number-of-people
 number-of-people
 1
 200
-2.0
+95.0
 1
 1
 NIL
