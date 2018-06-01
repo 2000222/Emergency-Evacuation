@@ -32,7 +32,7 @@ to initialize-turtle-vars
     set target nobody
     set immediate-target nobody
     set visited-checkpoints []
-    set exits-seen []
+    set exits-seen exits ; should people know where exits are?
   ]
 end
 
@@ -288,10 +288,12 @@ to-report exit-desirability [ p ]
 end
 
 to-report checkpoint-desirability [ p ]
-  let c -4.5
-  let d -1
-  let ch 0
-  let es -5  ; distance to exits-seen
+  let c 1  ; crowds are good because I don't necessarily know where the exit is
+           ; but minimizing distance to exits-seen is better (see `es`)
+
+  let d 0
+  let ch -5 ; minimize heading difference with nearby crowd
+  let es -100  ; minimize distance to exits-seen
 
   report c * crowdedness p + d * distance-from-me p + ch * crowd-heading-difference p + es * avg-distance-to-exits-seen p
 end
@@ -429,7 +431,7 @@ number-of-people
 number-of-people
 1
 200
-200.0
+29.0
 1
 1
 NIL
