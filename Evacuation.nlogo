@@ -186,7 +186,7 @@ to update-goals
   ;; if I don't see any exits, find a checkpoint
   if target = nobody [
     let visible-checkpoints (patch-set checkpoints) with [[visible? myself] of myself and not member? self [visited-checkpoints] of myself] ; don't go back to checkpoints I've already covered
-    set target max-one-of patch-set visible-checkpoints [[exit-desirability myself] of myself]
+    set target max-one-of patch-set visible-checkpoints [[checkpoint-desirability myself] of myself]
   ]
 
   ;; if I don't see any checkpoints either, pick somewhere to go based on heuristic
@@ -284,6 +284,14 @@ to-report exit-desirability [ p ]
   report c * crowdedness p + d * distance-from-me p
 end
 
+to-report checkpoint-desirability [ p ]
+  let c -4.5
+  let d -1
+  let ch 0
+
+  report c * crowdedness p + d * distance-from-me p + ch * crowd-heading-difference p
+end
+
 ; picking a next step
 to-report immediate-target-desirability [ p ]
   let h -1 ; favor straight line paths
@@ -301,6 +309,20 @@ end
 
 to-report distance-from-me [ p ]
   report [distance myself] of p
+end
+
+to-report crowd-heading-difference [ p ]
+  let res 0
+  let closest-people turtles in-radius 5
+  let n min (list count closest-people 10)
+  if n > 0 [
+    let n-people n-of n closest-people
+    let avg-heading-difference mean [heading-difference towards p [heading] of myself] of n-people
+    set res avg-heading-difference
+  ]
+
+  report res
+
 end
 
 to-report heading-difference [c d] ; current and desired headings
@@ -393,7 +415,7 @@ number-of-people
 number-of-people
 1
 200
-158.0
+200.0
 1
 1
 NIL
