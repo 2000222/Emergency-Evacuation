@@ -246,6 +246,7 @@ to-report patch-desirability [ p ]
   report c * crowdedness p + w * wall-proximity p + d * distance-from-me p
 end
 
+; picking an exit
 to-report exit-desirability [ p ]
   let c -4.5 ; crowdedness is bad - I might not be able to get to the exit quickly
   let d -1 ; closer exits are better
@@ -253,6 +254,7 @@ to-report exit-desirability [ p ]
   report c * crowdedness p + d * distance-from-me p
 end
 
+; picking a next step
 to-report immediate-target-desirability [ p ]
   let h -1 ; favor straight line paths
 
@@ -361,7 +363,7 @@ number-of-people
 number-of-people
 1
 200
-171.0
+158.0
 1
 1
 NIL
