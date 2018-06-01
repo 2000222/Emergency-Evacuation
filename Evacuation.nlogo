@@ -148,7 +148,7 @@ to make-people
     setxy x y
 
     ; can more easily see heading with regular turtles
-;    set shape "person"
+    set shape "person"
   ]
 end
 
@@ -289,7 +289,7 @@ to-report checkpoint-desirability [ p ]
   let c 1  ; crowds are good because I don't necessarily know where the exit is
            ; but minimizing distance to exits-seen is better (see `es`)
 
-  let d 0
+  let d -1
   let ch -5 ; minimize heading difference with nearby crowd
   let es -100  ; minimize distance to exits-seen
 
@@ -454,7 +454,7 @@ CHOOSER
 building-type
 building-type
 "open room" "one wall" "two walls"
-1
+2
 
 @#$#@#$#@
 ## WHAT IS IT?
