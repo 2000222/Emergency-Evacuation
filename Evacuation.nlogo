@@ -120,7 +120,7 @@ to make-people
     setxy x y
 
     ; can more easily see heading with regular turtles
-    set shape "person"
+;    set shape "person"
   ]
 end
 
@@ -156,7 +156,7 @@ to update-goals
   ;; if I don't see any exits, find a checkpoint
   if target = nobody [
     let visible-checkpoints filter visible? checkpoints
-    set target min-one-of patch-set visible-checkpoints [distance myself]
+    set target max-one-of patch-set visible-checkpoints [[exit-desirability myself] of myself]
   ]
 
   ;; if I don't see any checkpoints either, pick somewhere to go based on heuristic
@@ -167,7 +167,8 @@ to update-goals
   ]
 
   if target != nobody [
-    set immediate-target min-one-of neighbors with [ (pcolor != wall-color) and [ not anything-blocking? myself] of myself ] [distance [target] of myself]
+;    set immediate-target min-one-of neighbors with [ (pcolor != wall-color) and [ not anything-blocking? myself] of myself ] [distance [target] of myself]
+    set immediate-target min-one-of neighbors with [ (pcolor != wall-color) and [ not anything-blocking? myself] of myself ] [[immediate-target-desirability myself] of myself]
   ]
 end
 
@@ -249,6 +250,12 @@ to-report exit-desirability [ p ]
   report c * crowdedness p + d * distance-from-me p
 end
 
+to-report immediate-target-desirability [ p ]
+  let h -1 ; favor straight line paths
+
+  report heading-difference towards p towards target
+end
+
 to-report crowdedness [ p ]
   report [count turtles in-radius 2] of p
 end
@@ -259,6 +266,21 @@ end
 
 to-report distance-from-me [ p ]
   report [distance myself] of p
+end
+
+to-report heading-difference [c d] ; current and desired headings
+  let l 0 ; left
+  let r 0 ; right
+
+  ifelse d >= c [
+    set l 360 - d + c
+    set r d - c
+  ] [
+    set l c - d
+    set r 360 - c + d
+  ]
+
+  report min (list l r)
 end
 
 ; patch reporter
@@ -336,7 +358,7 @@ number-of-people
 number-of-people
 1
 200
-200.0
+171.0
 1
 1
 NIL
