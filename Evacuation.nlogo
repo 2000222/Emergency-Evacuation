@@ -167,12 +167,15 @@ to update-goals
   ]
 
   if target != nobody [
-;    set immediate-target min-one-of neighbors with [ (pcolor != wall-color) and [ not anything-blocking? myself] of myself ] [distance [target] of myself]
-    set immediate-target min-one-of neighbors with [ (pcolor != wall-color) and [ not anything-blocking? myself] of myself ] [[immediate-target-desirability myself] of myself]
+    set immediate-target max-one-of neighbors with [ [vacant? myself] of myself ] [[immediate-target-desirability myself] of myself]
   ]
 end
 
 ;; HELPER FUNCTIONS
+
+to-report vacant? [ p ]
+  report [pcolor] of p != wall-color and not anything-blocking? p
+end
 
 ; turtle reporter
 to-report visible? [ p ]
@@ -253,7 +256,7 @@ end
 to-report immediate-target-desirability [ p ]
   let h -1 ; favor straight line paths
 
-  report heading-difference towards p towards target
+  report h * heading-difference towards p towards target
 end
 
 to-report crowdedness [ p ]
