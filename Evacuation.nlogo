@@ -120,7 +120,7 @@ to make-people
     setxy x y
 
     ; can more easily see heading with regular turtles
-;    set shape "person"
+    set shape "person"
   ]
 end
 
@@ -151,7 +151,7 @@ to update-goals
 
   ;; pick an exit to target
   let visible-exits filter visible? exits
-  set target min-one-of patch-set visible-exits [distance myself] ; avoid crowdedness, too, if there are multiple exits to choose from :)
+  set target max-one-of patch-set visible-exits [[exit-desirability myself] of myself] ; avoid crowdedness, too, if there are multiple exits to choose from :)
 
   ;; if I don't see any exits, find a checkpoint
   if target = nobody [
@@ -243,8 +243,8 @@ to-report patch-desirability [ p ]
 end
 
 to-report exit-desirability [ p ]
-  let c -4 ; crowdedness is bad - I might not be able to get to the exit quickly
-  let d 1 ; closer exits are better
+  let c -4.5 ; crowdedness is bad - I might not be able to get to the exit quickly
+  let d -1 ; closer exits are better
 
   report c * crowdedness p + d * distance-from-me p
 end
@@ -336,7 +336,7 @@ number-of-people
 number-of-people
 1
 200
-180.0
+200.0
 1
 1
 NIL
