@@ -279,7 +279,7 @@ end
 
 ; picking an exit
 to-report exit-desirability [ p ]
-  let c -2 ; crowdedness is bad - I might not be able to get to the exit quickly
+  let c -1 ; crowdedness is bad - I might not be able to get to the exit quickly
   let d -1 ; closer exits are better
 
   report c * crowdedness p + d * distance-from-me p
