@@ -13,6 +13,7 @@ turtles-own [
   speed
   target
   immediate-target
+  visited-checkpoints
 ]
 
 to initialize-globals
@@ -29,6 +30,7 @@ to initialize-turtle-vars
     set speed 0.5
     set target nobody
     set immediate-target nobody
+    set visited-checkpoints []
   ]
 end
 
@@ -59,6 +61,7 @@ to make-building
   (cf:ifelse
     building-type = "open room" [ make-building-open-room ]
     building-type = "one wall" [ make-building-one-wall ]
+    building-type = "two walls" [ make-building-two-walls ]
   )
 end
 
@@ -98,6 +101,29 @@ to make-building-one-wall
 
   ;; set checkpoint
   set checkpoints lput patch x 0 checkpoints
+
+end
+
+to make-building-two-walls
+  setup-building
+  setup-doors
+
+  ask patches with [pycor = -8 or pycor = 0] [
+    set pcolor wall-color
+  ]
+
+  let gap-size 5
+  let low min-pxcor + (gap-size + 1) / 2
+  let high max-pxcor - (gap-size + 1) / 2
+  let x1 low + random (high - low)
+  let x2 low + random (high - low)
+
+  ask patches with [(pycor = 0 and abs (pxcor - x1) <= 2) or (pycor = -8 and abs (pxcor - x2) <= 2)] [
+    set pcolor ground-color
+  ]
+
+  set checkpoints lput patch x1 0 checkpoints
+  set checkpoints lput patch x2 -8 checkpoints
 
 end
 
@@ -145,6 +171,10 @@ to maybe-exit
 end
 
 to update-goals
+  if member? patch-here checkpoints and not member? patch-here visited-checkpoints [
+    set visited-checkpoints lput patch-here visited-checkpoints
+  ]
+
   if patch-here = immediate-target [
      set immediate-target nobody
   ]
@@ -155,7 +185,7 @@ to update-goals
 
   ;; if I don't see any exits, find a checkpoint
   if target = nobody [
-    let visible-checkpoints filter visible? checkpoints
+    let visible-checkpoints (patch-set checkpoints) with [[visible? myself] of myself and not member? self [visited-checkpoints] of myself] ; don't go back to checkpoints I've already covered
     set target max-one-of patch-set visible-checkpoints [[exit-desirability myself] of myself]
   ]
 
@@ -387,8 +417,8 @@ CHOOSER
 160
 building-type
 building-type
-"open room" "one wall"
-1
+"open room" "one wall" "two walls"
+2
 
 @#$#@#$#@
 ## WHAT IS IT?
