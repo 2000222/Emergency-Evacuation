@@ -14,6 +14,7 @@ turtles-own [
   target
   immediate-target
   visited-checkpoints
+  exits-seen
 ]
 
 to initialize-globals
@@ -31,6 +32,7 @@ to initialize-turtle-vars
     set target nobody
     set immediate-target nobody
     set visited-checkpoints []
+    set exits-seen []
   ]
 end
 
@@ -181,6 +183,7 @@ to update-goals
 
   ;; pick an exit to target
   let visible-exits filter visible? exits
+  foreach visible-exits [ x -> if not member? x exits-seen [set exits-seen lput x exits-seen] ] ; update exits-seen
   set target max-one-of patch-set visible-exits [[exit-desirability myself] of myself] ; avoid crowdedness, too, if there are multiple exits to choose from :)
 
   ;; if I don't see any exits, find a checkpoint
@@ -288,8 +291,9 @@ to-report checkpoint-desirability [ p ]
   let c -4.5
   let d -1
   let ch 0
+  let es -5  ; distance to exits-seen
 
-  report c * crowdedness p + d * distance-from-me p + ch * crowd-heading-difference p
+  report c * crowdedness p + d * distance-from-me p + ch * crowd-heading-difference p + es * avg-distance-to-exits-seen p
 end
 
 ; picking a next step
@@ -309,6 +313,16 @@ end
 
 to-report distance-from-me [ p ]
   report [distance myself] of p
+end
+
+to-report avg-distance-to-exits-seen [ p ]
+  let res 0
+
+  if not empty? exits-seen [
+    set res mean [distance p] of patch-set exits-seen
+  ]
+
+  report res
 end
 
 to-report crowd-heading-difference [ p ]
