@@ -15,6 +15,7 @@ turtles-own [
   immediate-target
   visited-checkpoints
   exits-seen
+  previous-targets
 ]
 
 to initialize-globals
@@ -33,6 +34,7 @@ to initialize-turtle-vars
     set immediate-target nobody
     set visited-checkpoints []
     set exits-seen exits ; should people know where exits are?
+    set previous-targets []
   ]
 end
 
@@ -171,6 +173,7 @@ to maybe-exit
 end
 
 to update-goals
+  ; update visited-checkpoints (currently not being used)
   if member? patch-here checkpoints and not member? patch-here visited-checkpoints [
     set visited-checkpoints lput patch-here visited-checkpoints
   ]
@@ -182,7 +185,7 @@ to update-goals
 
   ;; if I don't see any exits, find a checkpoint
   if target = nobody [
-    let visible-checkpoints (patch-set checkpoints) with [[visible? myself] of myself and not member? self [visited-checkpoints] of myself] ; don't go back to checkpoints I've already covered
+    let visible-checkpoints (patch-set checkpoints) with [[visible? myself] of myself]
     set target max-one-of patch-set visible-checkpoints [[checkpoint-desirability myself] of myself]
   ]
 
@@ -424,8 +427,8 @@ SLIDER
 number-of-people
 number-of-people
 1
-300
-167.0
+200
+200.0
 1
 1
 NIL
