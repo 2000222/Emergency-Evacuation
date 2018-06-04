@@ -175,10 +175,6 @@ to update-goals
     set visited-checkpoints lput patch-here visited-checkpoints
   ]
 
-;  if patch-here = immediate-target [
-;     set immediate-target nobody
-;  ]
-
   ;; pick an exit to target
   let visible-exits filter visible? exits
   foreach visible-exits [ x -> if not member? x exits-seen [set exits-seen lput x exits-seen] ] ; update exits-seen
