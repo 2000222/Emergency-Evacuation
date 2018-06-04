@@ -173,35 +173,56 @@ to maybe-exit
 end
 
 to update-goals
-  ; update visited-checkpoints (currently not being used)
+  ;; update visited-checkpoints (currently not being used)
   if member? patch-here checkpoints and not member? patch-here visited-checkpoints [
     set visited-checkpoints lput patch-here visited-checkpoints
   ]
 
-  ;; pick an exit to target
-  let visible-exits filter visible? exits
-  foreach visible-exits [ x -> if not member? x exits-seen [set exits-seen lput x exits-seen] ] ; update exits-seen
-  set target max-one-of patch-set visible-exits [[exit-desirability myself] of myself] ; avoid crowdedness, too, if there are multiple exits to choose from :)
-
-  ;; if I don't see any exits, find a checkpoint
-  if target = nobody [
-    let visible-checkpoints (patch-set checkpoints) with [[visible? myself] of myself]
-    set target max-one-of patch-set visible-checkpoints [[checkpoint-desirability myself] of myself]
+  ;; update previous targets - limit to 5
+  let max-prev 3
+  set previous-targets fput target previous-targets
+  if length previous-targets > max-prev [
+    set previous-targets sublist previous-targets 0 max-prev
   ]
 
-  ;; if I don't see any checkpoints either, pick somewhere to go based on heuristic
-  ;; Here, crowdedness is good, since I don't know where I'm going
-  if target = nobody [
-    let visible-patches other patches in-radius 5 with [ pcolor = ground-color and [visible? myself] of myself ]
-    set target max-one-of patch-set visible-patches [[patch-desirability myself] of myself]
+  if not indecisive? [
+
+    ;; pick an exit to target
+    let visible-exits filter visible? exits
+    foreach visible-exits [ x -> if not member? x exits-seen [set exits-seen lput x exits-seen] ] ; update exits-seen
+    set target max-one-of patch-set visible-exits [[exit-desirability myself] of myself] ; avoid crowdedness, too, if there are multiple exits to choose from :)
+
+    ;; if I don't see any exits, find a checkpoint
+    if target = nobody [
+      let visible-checkpoints (patch-set checkpoints) with [[visible? myself] of myself]
+      set target max-one-of patch-set visible-checkpoints [[checkpoint-desirability myself] of myself]
+    ]
+
+    ;; if I don't see any checkpoints either, pick somewhere to go based on heuristic
+    if target = nobody [
+      let visible-patches other patches in-radius 5 with [ pcolor = ground-color and [visible? myself] of myself ]
+      set target max-one-of patch-set visible-patches [[patch-desirability myself] of myself]
+    ]
   ]
 
+  ;; pick immediate target
   if target != nobody [
     set immediate-target max-one-of neighbors with [ [vacant? myself] of myself ] [[immediate-target-desirability myself] of myself]
   ]
 end
 
 ;; HELPER FUNCTIONS
+
+to-report indecisive?
+  ifelse length previous-targets >= 3 [
+    let i0 item 0 previous-targets
+    let i1 item 1 previous-targets
+    let i2 item 2 previous-targets
+    report not (i0 = i1 and i1 = i2)
+  ] [
+    report false
+  ]
+end
 
 to-report vacant? [ p ]
   report [pcolor] of p != wall-color and not anything-blocking? p
