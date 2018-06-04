@@ -148,7 +148,7 @@ to make-people
     setxy x y
 
     ; can more easily see heading with regular turtles
-    set shape "person"
+;    set shape "person"
   ]
 end
 
@@ -175,9 +175,9 @@ to update-goals
     set visited-checkpoints lput patch-here visited-checkpoints
   ]
 
-  if patch-here = immediate-target [
-     set immediate-target nobody
-  ]
+;  if patch-here = immediate-target [
+;     set immediate-target nobody
+;  ]
 
   ;; pick an exit to target
   let visible-exits filter visible? exits
@@ -327,7 +327,7 @@ end
 
 to-report crowd-heading-difference [ p ]
   let res 0
-  let closest-people turtles in-radius 5
+  let closest-people other turtles in-radius 5
   let n min (list count closest-people 10)
   if n > 0 [
     let n-people n-of n closest-people
