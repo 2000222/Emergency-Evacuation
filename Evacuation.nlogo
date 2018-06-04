@@ -293,7 +293,7 @@ to-report checkpoint-desirability [ p ]
   let ch -5 ; minimize heading difference with nearby crowd
   let es -100  ; minimize distance to exits-seen
 
-  report c * crowdedness p + d * distance-from-me p + ch * crowd-heading-difference p + es * avg-distance-to-exits-seen p
+  report c * crowdedness p + d * distance-from-me p + ch * crowd-heading-difference p + es * avg-min-distance-to-exits-seen p
 end
 
 ; picking a next step
@@ -315,11 +315,11 @@ to-report distance-from-me [ p ]
   report [distance myself] of p
 end
 
-to-report avg-distance-to-exits-seen [ p ]
+to-report avg-min-distance-to-exits-seen [ p ]
   let res 0
 
   if not empty? exits-seen [
-    set res mean [distance p] of patch-set exits-seen
+    set res (mean [distance p] of patch-set exits-seen) + (min [distance p] of patch-set exits-seen)
   ]
 
   report res
@@ -429,7 +429,7 @@ number-of-people
 number-of-people
 1
 300
-300.0
+167.0
 1
 1
 NIL
