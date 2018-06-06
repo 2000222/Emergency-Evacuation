@@ -7,6 +7,7 @@ globals [
   door-color
   ground-color
   n-evacuated
+  n-previous-targets
 ]
 
 turtles-own [
@@ -25,6 +26,7 @@ to initialize-globals
   set door-color blue
   set ground-color black
   set n-evacuated 0
+  set n-previous-targets 5
 end
 
 to initialize-turtle-vars
@@ -59,13 +61,17 @@ to go
   tick
 end
 
-;; SETUP FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SETUP FUNCTIONS ;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to make-building
   (cf:ifelse
     building-type = "open room" [ make-building-open-room ]
     building-type = "one wall" [ make-building-one-wall ]
     building-type = "two walls" [ make-building-two-walls ]
+    building-type = "15 small rooms" [ make-building-15-rooms ]
+    building-type = "4 big rooms" [ make-building-4-rooms ]
   )
 end
 
@@ -74,20 +80,27 @@ to setup-building
   ask patches with [ on-edge ] [ set pcolor wall-color ]
 end
 
-to setup-doors
-  set exits lput patch min-pxcor (max-pycor / 2) exits
-  set exits lput patch max-pxcor (max-pycor / 2) exits
-  foreach exits [ p -> ask p [ set pcolor door-color ] ]
+to setup-doors [ doors ]
+  foreach doors [ d ->
+    set exits lput d exits
+    ask d [ set pcolor door-color ]
+  ]
+end
+
+to setup-checkpoints [ points ]
+  foreach points [ c ->
+    set checkpoints lput c checkpoints
+  ]
 end
 
 to make-building-open-room
   setup-building
-  setup-doors
+  setup-doors (list patch min-pxcor (max-pycor / 2) patch max-pxcor (max-pycor / 2))
 end
 
 to make-building-one-wall
   setup-building
-  setup-doors
+  setup-doors (list patch min-pxcor (max-pycor / 2) patch max-pxcor (max-pycor / 2))
 
   ;; make wall in center
   ask patches with [pycor = 0] [
@@ -110,7 +123,7 @@ end
 
 to make-building-two-walls
   setup-building
-  setup-doors
+  setup-doors (list patch min-pxcor (max-pycor / 2) patch max-pxcor (max-pycor / 2))
 
   ask patches with [pycor = -8 or pycor = 0] [
     set pcolor wall-color
@@ -129,6 +142,54 @@ to make-building-two-walls
   set checkpoints lput patch x1 0 checkpoints
   set checkpoints lput patch x2 -8 checkpoints
 
+end
+
+to make-room [ topleft xwidth ywidth door ]
+  let x [pxcor] of topleft
+  let y [pycor] of topleft
+  ask patches with [ (pxcor >= x and pxcor <= x + xwidth) and (pycor = y or pycor = y - ywidth) ] [ set pcolor wall-color ]
+  ask patches with [ (pycor <= y and pycor >= y - ywidth) and (pxcor = x or pxcor = x + xwidth) ] [ set pcolor wall-color ]
+  (cf:ifelse
+    door = "bottom" [ ask patch (x + xwidth / 2) (y - ywidth) [ set pcolor ground-color ] ] ; small rooms
+    door = "right" [ ; large rooms
+      ask patch (x + xwidth) (y - ywidth / 2) [ set pcolor ground-color ]
+      ask patch (x + xwidth) (1 + y - ywidth / 2) [ set pcolor ground-color ]
+    ]
+    door = "top" [ ; large rooms
+      ask patch (x + xwidth / 2) y [ set pcolor ground-color ]
+      ask patch (1 + x + xwidth / 2) y [ set pcolor ground-color ]
+    ]
+  )
+end
+
+to make-building-15-rooms
+  setup-building
+  setup-doors (list patch max-pxcor (max-pycor * 3 / 4) patch max-pxcor (min-pycor * 3 / 4))
+
+  foreach (range max-pycor (max-pycor - 30) -10) [ y ->
+    foreach (range min-pxcor (max-pycor - 10) 5) [ x ->
+      make-room patch x y 5 5 "bottom"
+    ]
+  ]
+
+  setup-checkpoints (list patch 12 8 patch 12 -2)
+
+end
+
+to make-building-4-rooms
+  setup-building
+  setup-doors (list patch max-pxcor (max-pycor * 3 / 4))
+
+  let room-size (max-pycor - min-pycor) / 2
+  make-room (patch min-pxcor max-pycor) room-size room-size "right"
+  make-room (patch (min-pxcor + room-size) (max-pycor - room-size)) room-size room-size "top"
+  make-room (patch min-pxcor (max-pycor - room-size)) room-size room-size "right"
+
+  ;; make extra opening
+  ask patch -8 0 [ set pcolor ground-color ]
+  ask patch -7 0 [ set pcolor ground-color ]
+
+  setup-checkpoints (list patch 8 8 patch 8 -2 patch -1 -8)
 end
 
 ;; spawn people randomly but make sure they are on ground patches
@@ -154,7 +215,9 @@ to make-people
   ]
 end
 
-;; UPDATE FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; UPDATE FUNCTIONS ;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to move
   update-goals
@@ -179,10 +242,9 @@ to update-goals
   ]
 
   ;; update previous targets - limit to 5
-  let max-prev 3
   set previous-targets fput target previous-targets
-  if length previous-targets > max-prev [
-    set previous-targets sublist previous-targets 0 max-prev
+  if length previous-targets > n-previous-targets [
+    set previous-targets sublist previous-targets 0 n-previous-targets
   ]
 
   if not indecisive? [
@@ -211,14 +273,18 @@ to update-goals
   ]
 end
 
-;; HELPER FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HELPER FUNCTIONS ;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to-report indecisive?
-  ifelse length previous-targets >= 3 [
+  ifelse length previous-targets >= 5 [
     let i0 item 0 previous-targets
     let i1 item 1 previous-targets
     let i2 item 2 previous-targets
-    report not (i0 = i1 and i1 = i2)
+    let i3 item 3 previous-targets
+    let i4 item 4 previous-targets
+    report not (i0 = i1 and i1 = i2 and i2 = i3 and i3 = i4)
   ] [
     report false
   ]
@@ -309,7 +375,7 @@ to-report checkpoint-desirability [ p ]
   let c 1  ; crowds are good because I don't necessarily know where the exit is
            ; but minimizing distance to exits-seen is better (see `es`)
 
-  let d -1
+  let d -1  ; closer checkpoints are better
   let ch -5 ; minimize heading difference with nearby crowd
   let es -100  ; minimize distance to exits-seen
 
@@ -407,10 +473,10 @@ ticks
 30.0
 
 BUTTON
-5
-15
-68
-48
+10
+100
+73
+133
 NIL
 setup
 NIL
@@ -424,10 +490,10 @@ NIL
 1
 
 BUTTON
-90
-15
-153
-48
+130
+100
+193
+133
 NIL
 go
 T
@@ -442,39 +508,28 @@ NIL
 
 SLIDER
 10
-65
-182
-98
+10
+180
+43
 number-of-people
 number-of-people
 1
 200
-200.0
+1.0
 1
 1
 NIL
 HORIZONTAL
 
-MONITOR
-20
-305
-102
-350
-NIL
-n-evacuated
-17
-1
-11
-
 CHOOSER
 10
-115
-148
-160
+50
+102
+95
 building-type
 building-type
-"open room" "one wall" "two walls"
-2
+"open room" "one wall" "two walls" "15 small rooms" "4 big rooms"
+4
 
 @#$#@#$#@
 ## WHAT IS IT?
