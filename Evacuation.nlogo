@@ -166,7 +166,6 @@ to make-customized-building
 
       ;; make doors for each room
       let xd round (xw + roomsize / 2)
-      print xd
       ask patches with [ (pycor = topwally + 1 or pycor = botwally - 1) and (pxcor >= xd - 1 and pxcor <= xd + 1) ] [
         set pcolor ground-color
       ]
@@ -428,7 +427,7 @@ end
 ; calculate desirability when I can't see any exits or checkpoints.
 to-report patch-desirability [ p ]
   let c 2 ; crowdedness is good! since I don't know where to go
-  let w -1 ; walls are useless - stay away
+  let w -3 ; walls are useless - stay away
   let d 1 ; further away is better - I need to get somewhere I can actually see checkpoints/exits
 
   report c * crowdedness p + w * wall-proximity p + d * distance-from-me p
@@ -586,7 +585,7 @@ number-of-people
 number-of-people
 1
 200
-200.0
+37.0
 1
 1
 NIL
@@ -669,7 +668,7 @@ number-of-rooms
 number-of-rooms
 0
 10
-10.0
+2.0
 2
 1
 NIL
@@ -684,7 +683,7 @@ hallway-size
 hallway-size
 3
 21
-17.0
+5.0
 2
 1
 NIL
@@ -699,7 +698,7 @@ number-of-doors
 number-of-doors
 1
 3
-3.0
+2.0
 1
 1
 NIL
