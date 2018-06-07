@@ -172,7 +172,7 @@ to make-customized-building
 
       ;; make checkpoints in the middle of the room
       setup-checkpoints (list patches with [ pycor = 0 and pxcor = xd ])
-;      setup-checkpoints (list patches with [ (pycor = topwally + 1 or pycor = botwally - 1) and pxcor = xd ])
+      setup-checkpoints (list patches with [ (pycor = topwally + 1 or pycor = botwally - 1) and pxcor = xd ])
 
     ]
   ]
@@ -459,7 +459,7 @@ to-report immediate-target-desirability [ p ]
   report h * heading-difference towards p towards target
 end
 
-to-report crowdedness [ p ]
+to-report crowdedness [ p ] ; how do I make this only count turtles that aren't blocked by walls?
   report [count turtles in-radius 5] of p
 end
 
@@ -543,10 +543,10 @@ ticks
 30.0
 
 BUTTON
-10
-230
-100
-263
+20
+165
+110
+198
 NIL
 setup
 NIL
@@ -560,10 +560,10 @@ NIL
 1
 
 BUTTON
-125
-230
-215
-263
+135
+165
+225
+198
 NIL
 go
 T
@@ -585,7 +585,7 @@ number-of-people
 number-of-people
 1
 200
-37.0
+200.0
 1
 1
 NIL
@@ -599,13 +599,13 @@ CHOOSER
 building-type
 building-type
 "build my own!" "open room" "one wall" "two walls" "15 small rooms" "4 big rooms"
-0
+3
 
 MONITOR
-10
-490
-160
-535
+45
+270
+195
+315
 Average Evacuation Time
 average-time-to-evacuate
 17
@@ -613,10 +613,10 @@ average-time-to-evacuate
 11
 
 MONITOR
-10
-440
-160
-485
+45
+220
+195
+265
 Number of People Evacuated
 n-evacuated
 17
@@ -624,10 +624,10 @@ n-evacuated
 11
 
 MONITOR
-10
-540
-160
-585
+45
+320
+195
+365
 Total Evacuation Time
 ticks
 17
@@ -643,7 +643,7 @@ door-proximity
 door-proximity
 1
 hallway-size - 2
-1.0
+3.0
 2
 1
 NIL
@@ -668,7 +668,7 @@ number-of-rooms
 number-of-rooms
 0
 10
-2.0
+6.0
 2
 1
 NIL
