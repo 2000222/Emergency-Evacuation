@@ -599,7 +599,7 @@ CHOOSER
 building-type
 building-type
 "build my own!" "open room" "one wall" "two walls" "15 small rooms" "4 big rooms"
-3
+0
 
 MONITOR
 45
@@ -635,15 +635,15 @@ ticks
 11
 
 SLIDER
-10
+130
 120
-115
+235
 153
 door-proximity
 door-proximity
 1
 hallway-size - 2
-3.0
+7.0
 2
 1
 NIL
@@ -668,7 +668,7 @@ number-of-rooms
 number-of-rooms
 0
 10
-6.0
+8.0
 2
 1
 NIL
@@ -683,16 +683,16 @@ hallway-size
 hallway-size
 3
 21
-5.0
+17.0
 2
 1
 NIL
 HORIZONTAL
 
 SLIDER
+10
 120
-120
-235
+125
 153
 number-of-doors
 number-of-doors
