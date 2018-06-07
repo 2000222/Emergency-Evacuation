@@ -455,9 +455,9 @@ to-report on-edge
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+245
 10
-647
+682
 448
 -1
 -1
@@ -483,9 +483,9 @@ ticks
 
 BUTTON
 10
+75
 100
-73
-133
+108
 NIL
 setup
 NIL
@@ -499,10 +499,10 @@ NIL
 1
 
 BUTTON
-130
-100
-193
-133
+125
+75
+215
+108
 NIL
 go
 T
@@ -516,9 +516,9 @@ NIL
 1
 
 SLIDER
+5
 10
-10
-180
+140
 43
 number-of-people
 number-of-people
@@ -531,32 +531,47 @@ NIL
 HORIZONTAL
 
 CHOOSER
+145
 10
-50
-102
-95
+237
+55
 building-type
 building-type
 "open room" "one wall" "two walls" "15 small rooms" "4 big rooms"
 1
 
-PLOT
-5
-440
-205
-590
+MONITOR
+10
+415
+160
+460
 Average Evacuation Time
-NIL
-NIL
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot average-time-to-evacuate"
+average-time-to-evacuate
+17
+1
+11
+
+MONITOR
+10
+365
+160
+410
+Number of People Evacuated
+n-evacuated
+17
+1
+11
+
+MONITOR
+10
+465
+160
+510
+Total Evacuation Time
+ticks
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
