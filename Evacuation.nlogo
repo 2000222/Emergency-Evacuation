@@ -707,39 +707,61 @@ HORIZONTAL
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+This model focuses on the crowded evacuation of a building. Each person follows the same heuristic model in selecting where to go and how to move.
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+Each person follows a heuristic model based on several heuristics:
+
+- crowdedness
+- closeness to walls
+- distance from me (of target)
+- distance from exits (of target)
+- average difference between my heading and the crowd's
+
+These heuristics contribute to how each person selects an exit, checkpoint, or nearby ground patch. 
+
+Checkpoints are used as targets that are preferred below exits, but above normal ground patches. They are required to encourage people to go around large obstacles in order to reach a point where they can see exits.
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+First, decide how many people to spawn by setting the NUMBER-OF-PEOPLE slider. Next, pick a BUILDING-TYPE. The "build my own!" uses the remaining sliders to customize a building. All other building types are exploratory presets. 
+
+Next, if "build my own!" was selected, choose NUMBER-OF-ROOMS, HALLWAY-SIZE, NUMBER-OF-DOORS, and DOOR-PROXIMITY. Note that the maximum DOOR-PROXIMITY allowed is based on HALLWAY-SIZE.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+Sometimes people in a crowd around a door will break away and move toward another door instead. 
+
+What set or sets of parameters result in the fastest overall evacuation? What about the slowest?
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Play with the parameters to try to determine how each parameter affects evacuation time under which conditions.
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+Currently everyone has initialized knowledge of where the exits are. What if they didn't?
+
+There are plenty of other building types left unexplored. Some buildings have rooms in the center. Many are not square-shaped.
+
+Many buildings have tables and other miscellaneous obstacles that are not necessarily walls.
+
+Is it possible to build a complete heuristic model without using checkpoints?
+
+The weights for the heuristic model could be turned into tune-able parameters.
 
 ## NETLOGO FEATURES
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+The reporters 'obstacles-blocking?' and 'anything-blocking?' use ray tracing by using the turtle as the ray. 
 
 ## RELATED MODELS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+- Flocking
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+This model was created by Eric Hao guided by Bryan Head.
 @#$#@#$#@
 default
 true
