@@ -74,12 +74,39 @@ end
 
 to make-building
   (cf:ifelse
+    ; preset buildings ;
     building-type = "open room" [ make-building-open-room ]
     building-type = "one wall" [ make-building-one-wall ]
     building-type = "two walls" [ make-building-two-walls ]
     building-type = "15 small rooms" [ make-building-15-rooms ]
     building-type = "4 big rooms" [ make-building-4-rooms ]
+
+    ; real buildings ;
+    building-type = "build my own!" [ make-customized-building ]
   )
+end
+
+;; spawn people randomly but make sure they are on ground patches
+to make-people
+  crt number-of-people [
+    let x random-xcor
+    let y random-ycor
+    let n [neighbors] of patch x y
+
+    while [
+      [pcolor] of patch x y != ground-color or                        ; must be on a ground patch
+      any? [neighbors with [pcolor != ground-color]] of patch x y or  ; must not be too close to wall
+      any? turtles with [abs (x - pxcor) < 1 and abs (y - pycor) < 1] ; must not be on top of another person
+    ] [
+      set x random-xcor
+      set y random-ycor
+    ]
+
+    setxy x y
+
+    ; can more easily see heading with regular turtles
+    set shape "person"
+  ]
 end
 
 to setup-building
@@ -99,6 +126,63 @@ to setup-checkpoints [ points ]
     set checkpoints lput c checkpoints
   ]
 end
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; BUILD MY OWN ;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+to make-customized-building
+  setup-building
+
+  ;; make doors
+  let topdoory 1 + (door-proximity - 1) / 2
+  let botdoory -1 - (door-proximity - 1) / 2
+  let topdoor patch max-pxcor topdoory
+  let botdoor patch max-pxcor botdoory
+  let middoor patch max-pxcor 0
+  setup-doors (cf:ifelse-value
+    number-of-doors = 1 [ (list middoor) ]
+    number-of-doors = 2 [ (list botdoor topdoor) ]
+    number-of-doors = 3 [ (list botdoor middoor topdoor) ]
+  )
+
+  ;; make rooms
+  let topwally (hallway-size - 1) / 2
+  let botwally 0 - (hallway-size - 1) / 2
+
+  if number-of-rooms != 0 [
+    ask patches with [ pycor = topwally + 1 or pycor = botwally - 1] [
+      set pcolor wall-color
+    ]
+
+    ;; divide the rooms
+    let nrooms (number-of-rooms / 2)
+    let roomsize ((max-pxcor - min-pxcor) / nrooms)
+    foreach (range min-pxcor max-pxcor roomsize) [ x ->
+      let xw round x
+      ask patches with [ (pycor > topwally or pycor < botwally) and pxcor = xw ] [
+        set pcolor wall-color
+      ]
+
+      ;; make doors for each room
+      let xd xw + roomsize / 2
+      ask patches with [ (pycor = topwally + 1 or pycor = botwally - 1) and pxcor = xd ] [
+        set pcolor ground-color
+      ]
+
+      ;; make checkpoints in the middle of the room
+      setup-checkpoints (list patches with [ pycor = 0 and pxcor = xd ])
+      setup-checkpoints (list patches with [ (pycor = topwally + 1 or pycor = botwally - 1) and pxcor = xd ])
+
+    ]
+  ]
+
+end
+
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; PRESET BUILDINGS ;;
+;;;;;;;;;;;;;;;;;;;;;;
 
 to make-building-open-room
   setup-building
@@ -197,29 +281,6 @@ to make-building-4-rooms
   ask patch -7 0 [ set pcolor ground-color ]
 
   setup-checkpoints (list patch 8 8 patch 8 -2 patch -1 -8)
-end
-
-;; spawn people randomly but make sure they are on ground patches
-to make-people
-  crt number-of-people [
-    let x random-xcor
-    let y random-ycor
-    let n [neighbors] of patch x y
-
-    while [
-      [pcolor] of patch x y != ground-color or                        ; must be on a ground patch
-      any? [neighbors with [pcolor != ground-color]] of patch x y or  ; must not be too close to wall
-      any? turtles with [abs (x - pxcor) < 1 and abs (y - pycor) < 1] ; must not be on top of another person
-    ] [
-      set x random-xcor
-      set y random-ycor
-    ]
-
-    setxy x y
-
-    ; can more easily see heading with regular turtles
-    set shape "person"
-  ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -483,9 +544,9 @@ ticks
 
 BUTTON
 10
-75
+230
 100
-108
+263
 NIL
 setup
 NIL
@@ -500,9 +561,9 @@ NIL
 
 BUTTON
 125
-75
+230
 215
-108
+263
 NIL
 go
 T
@@ -518,7 +579,7 @@ NIL
 SLIDER
 5
 10
-140
+135
 43
 number-of-people
 number-of-people
@@ -531,20 +592,20 @@ NIL
 HORIZONTAL
 
 CHOOSER
-145
+140
 10
-237
+235
 55
 building-type
 building-type
-"open room" "one wall" "two walls" "15 small rooms" "4 big rooms"
-1
+"build my own!" "open room" "one wall" "two walls" "15 small rooms" "4 big rooms"
+0
 
 MONITOR
 10
-415
+490
 160
-460
+535
 Average Evacuation Time
 average-time-to-evacuate
 17
@@ -553,9 +614,9 @@ average-time-to-evacuate
 
 MONITOR
 10
-365
+440
 160
-410
+485
 Number of People Evacuated
 n-evacuated
 17
@@ -564,14 +625,84 @@ n-evacuated
 
 MONITOR
 10
-465
+540
 160
-510
+585
 Total Evacuation Time
 ticks
 17
 1
 11
+
+SLIDER
+10
+120
+115
+153
+door-proximity
+door-proximity
+1
+hallway-size - 2
+1.0
+2
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+5
+60
+155
+78
+Build-my-own parameters:
+11
+0.0
+1
+
+SLIDER
+10
+80
+125
+113
+number-of-rooms
+number-of-rooms
+0
+10
+8.0
+2
+1
+NIL
+HORIZONTAL
+
+SLIDER
+130
+80
+235
+113
+hallway-size
+hallway-size
+3
+21
+3.0
+2
+1
+NIL
+HORIZONTAL
+
+SLIDER
+120
+120
+235
+153
+number-of-doors
+number-of-doors
+1
+3
+3.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
