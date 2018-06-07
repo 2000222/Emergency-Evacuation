@@ -6,8 +6,12 @@ globals [
   wall-color
   door-color
   ground-color
-  n-evacuated
   n-previous-targets
+
+
+  n-evacuated
+  total-time-to-evacuate
+  average-time-to-evacuate
 ]
 
 turtles-own [
@@ -25,8 +29,11 @@ to initialize-globals
   set wall-color white
   set door-color blue
   set ground-color black
-  set n-evacuated 0
   set n-previous-targets 5
+
+  set n-evacuated 0
+  set total-time-to-evacuate 0
+  set average-time-to-evacuate 0
 end
 
 to initialize-turtle-vars
@@ -231,6 +238,8 @@ end
 to maybe-exit
   if [pcolor] of patch-here = door-color [
     set n-evacuated n-evacuated + 1
+    set total-time-to-evacuate total-time-to-evacuate + ticks
+    set average-time-to-evacuate total-time-to-evacuate / n-evacuated
     die
   ]
 end
@@ -515,7 +524,7 @@ number-of-people
 number-of-people
 1
 200
-1.0
+200.0
 1
 1
 NIL
@@ -529,7 +538,25 @@ CHOOSER
 building-type
 building-type
 "open room" "one wall" "two walls" "15 small rooms" "4 big rooms"
-4
+1
+
+PLOT
+5
+440
+205
+590
+Average Evacuation Time
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot average-time-to-evacuate"
 
 @#$#@#$#@
 ## WHAT IS IT?
