@@ -165,14 +165,15 @@ to make-customized-building
       ]
 
       ;; make doors for each room
-      let xd xw + roomsize / 2
-      ask patches with [ (pycor = topwally + 1 or pycor = botwally - 1) and pxcor = xd ] [
+      let xd round (xw + roomsize / 2)
+      print xd
+      ask patches with [ (pycor = topwally + 1 or pycor = botwally - 1) and (pxcor >= xd - 1 and pxcor <= xd + 1) ] [
         set pcolor ground-color
       ]
 
       ;; make checkpoints in the middle of the room
       setup-checkpoints (list patches with [ pycor = 0 and pxcor = xd ])
-      setup-checkpoints (list patches with [ (pycor = topwally + 1 or pycor = botwally - 1) and pxcor = xd ])
+;      setup-checkpoints (list patches with [ (pycor = topwally + 1 or pycor = botwally - 1) and pxcor = xd ])
 
     ]
   ]
@@ -668,7 +669,7 @@ number-of-rooms
 number-of-rooms
 0
 10
-8.0
+10.0
 2
 1
 NIL
@@ -683,7 +684,7 @@ hallway-size
 hallway-size
 3
 21
-3.0
+17.0
 2
 1
 NIL
