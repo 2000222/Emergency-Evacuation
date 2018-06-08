@@ -647,7 +647,7 @@ door-proximity
 door-proximity
 1
 hallway-size - 2
-7.0
+19.0
 2
 1
 NIL
@@ -672,7 +672,7 @@ number-of-rooms
 number-of-rooms
 0
 10
-8.0
+10.0
 2
 1
 NIL
@@ -687,7 +687,7 @@ hallway-size
 hallway-size
 3
 21
-17.0
+21.0
 2
 1
 NIL
@@ -1087,6 +1087,151 @@ NetLogo 6.0.3
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="door-proximity" repetitions="30" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>ticks</metric>
+    <metric>average-time-to-evacuate</metric>
+    <enumeratedValueSet variable="building-type">
+      <value value="&quot;build my own!&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-doors">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="door-proximity">
+      <value value="1"/>
+      <value value="3"/>
+      <value value="5"/>
+      <value value="7"/>
+      <value value="9"/>
+      <value value="11"/>
+      <value value="13"/>
+      <value value="15"/>
+      <value value="17"/>
+      <value value="19"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-checkpoints">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-people">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hallway-size">
+      <value value="21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-rooms">
+      <value value="0"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="hallway-size" repetitions="30" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>ticks</metric>
+    <metric>average-time-to-evacuate</metric>
+    <enumeratedValueSet variable="building-type">
+      <value value="&quot;build my own!&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-doors">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="door-proximity">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-checkpoints">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-people">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hallway-size">
+      <value value="3"/>
+      <value value="5"/>
+      <value value="7"/>
+      <value value="9"/>
+      <value value="13"/>
+      <value value="15"/>
+      <value value="17"/>
+      <value value="19"/>
+      <value value="21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-rooms">
+      <value value="10"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="number-of-rooms" repetitions="30" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>ticks</metric>
+    <metric>average-time-to-evacuate</metric>
+    <enumeratedValueSet variable="building-type">
+      <value value="&quot;build my own!&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-doors">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="door-proximity">
+      <value value="19"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-checkpoints">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-people">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hallway-size">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-rooms">
+      <value value="0"/>
+      <value value="2"/>
+      <value value="4"/>
+      <value value="6"/>
+      <value value="8"/>
+      <value value="10"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="hallway size vs number of rooms" repetitions="10" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>ticks</metric>
+    <metric>average-time-to-evacuate</metric>
+    <enumeratedValueSet variable="building-type">
+      <value value="&quot;build my own!&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-doors">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="door-proximity">
+      <value value="19"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-checkpoints">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-people">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hallway-size">
+      <value value="3"/>
+      <value value="5"/>
+      <value value="7"/>
+      <value value="9"/>
+      <value value="11"/>
+      <value value="13"/>
+      <value value="15"/>
+      <value value="17"/>
+      <value value="19"/>
+      <value value="21"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-rooms">
+      <value value="2"/>
+      <value value="4"/>
+      <value value="6"/>
+      <value value="8"/>
+      <value value="10"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
