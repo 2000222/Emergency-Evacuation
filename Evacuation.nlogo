@@ -83,7 +83,7 @@ to make-building
     building-type = "15 small rooms" [ make-building-15-rooms ]
     building-type = "4 big rooms" [ make-building-4-rooms ]
 
-    ; real buildings ;
+    ; customizeable building ;
     building-type = "build my own!" [ make-customized-building ]
   )
 end
@@ -111,11 +111,13 @@ to make-people
   ]
 end
 
+; make walls around edges
 to setup-building
   ask patches [ set pcolor ground-color ]
   ask patches with [ on-edge ] [ set pcolor wall-color ]
 end
 
+; setup doors and add them to exits
 to setup-doors [ doors ]
   foreach doors [ d ->
     set exits lput d exits
@@ -123,6 +125,7 @@ to setup-doors [ doors ]
   ]
 end
 
+; setup checkpoints and add them to checkpoints
 to setup-checkpoints [ points ]
   foreach points [ c ->
     set checkpoints lput c checkpoints
@@ -300,6 +303,7 @@ to move
   ]
 end
 
+; remove turtle if an exit has been reached. Also update measures.
 to maybe-exit
   if [pcolor] of patch-here = door-color [
     set n-evacuated n-evacuated + 1
@@ -309,6 +313,7 @@ to maybe-exit
   ]
 end
 
+; Find a target and immediate-target
 to update-goals
   ;; update visited-checkpoints (currently not being used)
   if member? patch-here checkpoints and not member? patch-here visited-checkpoints [
@@ -351,6 +356,7 @@ end
 ;; HELPER FUNCTIONS ;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; Checks whether a person keeps switching targets every tick.
 to-report indecisive?
   ifelse length previous-targets >= 5 [
     let i0 item 0 previous-targets
@@ -364,15 +370,17 @@ to-report indecisive?
   ]
 end
 
+; Checks if a patch is clear.
 to-report vacant? [ p ]
   report [pcolor] of p != wall-color and not anything-blocking? p
 end
 
-; turtle reporter
+; Check if a patch is "visible". Only walls block visibility.
 to-report visible? [ p ]
   report not obstacles-blocking? p
 end
 
+; Checks if there is a wall blocking the person from seeing the patch p.
 to-report obstacles-blocking? [ p ]
   let res false
   let old-heading heading
@@ -395,6 +403,7 @@ to-report obstacles-blocking? [ p ]
   report res
 end
 
+; Does the same thing as `obstacles-blocking?` but other people can block, too.
 to-report anything-blocking? [ p ]
   let old-heading heading
   let old-x xcor
@@ -424,6 +433,7 @@ to-report anything-blocking? [ p ]
   report res
 end
 
+; Checks for collision with other people or walls.
 to-report colliding-with-something?
   report [pcolor] of patch-here = wall-color or any? other turtles in-radius 0.5 or any? patches in-radius 0.9 with [pcolor = wall-color]
 end
@@ -445,6 +455,7 @@ to-report exit-desirability [ p ]
   report c * crowdedness p + d * distance-from-me p
 end
 
+; picking a checkpoint when I can't see any exits.
 to-report checkpoint-desirability [ p ]
   let c 1  ; crowds are good because I don't necessarily know where the exit is
            ; but minimizing distance to exits-seen is better (see `es`)
@@ -456,7 +467,7 @@ to-report checkpoint-desirability [ p ]
   report c * crowdedness p + d * distance-from-me p + ch * crowd-heading-difference p + es * avg-min-distance-to-exits-seen p
 end
 
-; picking a next step
+; picking a next step based on target
 to-report immediate-target-desirability [ p ]
   let h -1 ; favor straight line paths
 
@@ -499,6 +510,7 @@ to-report crowd-heading-difference [ p ]
 
 end
 
+; computes the minimum difference in heading between two headings
 to-report heading-difference [c d] ; current and desired headings
   let l 0 ; left
   let r 0 ; right
@@ -514,7 +526,7 @@ to-report heading-difference [c d] ; current and desired headings
   report min (list l r)
 end
 
-; patch reporter
+; checks if a patch is on the edge of the world
 to-report on-edge
   report pxcor = min-pxcor or pycor = min-pycor or pxcor = max-pxcor or pycor = max-pycor
 end
