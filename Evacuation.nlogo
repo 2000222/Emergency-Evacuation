@@ -5,6 +5,7 @@ globals [
   checkpoints
   wall-color
   door-color
+  checkpoint-color
   ground-color
   n-previous-targets
 
@@ -28,6 +29,7 @@ to initialize-globals
   set checkpoints []
   set wall-color white
   set door-color blue
+  set checkpoint-color yellow
   set ground-color black
   set n-previous-targets 5
 
@@ -124,6 +126,9 @@ end
 to setup-checkpoints [ points ]
   foreach points [ c ->
     set checkpoints lput c checkpoints
+    if show-checkpoints [
+      ask c [ set pcolor checkpoint-color ]
+    ]
   ]
 end
 
@@ -208,7 +213,7 @@ to make-building-one-wall
   ]
 
   ;; set checkpoint
-  set checkpoints lput patch x 0 checkpoints
+  setup-checkpoints (list patch x 0)
 
 end
 
@@ -230,8 +235,7 @@ to make-building-two-walls
     set pcolor ground-color
   ]
 
-  set checkpoints lput patch x1 0 checkpoints
-  set checkpoints lput patch x2 -8 checkpoints
+  setup-checkpoints (list patch x1 0 patch x2 -8)
 
 end
 
@@ -544,9 +548,9 @@ ticks
 
 BUTTON
 20
-165
+215
 110
-198
+248
 NIL
 setup
 NIL
@@ -561,9 +565,9 @@ NIL
 
 BUTTON
 135
-165
+215
 225
-198
+248
 NIL
 go
 T
@@ -603,9 +607,9 @@ building-type
 
 MONITOR
 45
-270
+320
 195
-315
+365
 Average Evacuation Time
 average-time-to-evacuate
 17
@@ -614,9 +618,9 @@ average-time-to-evacuate
 
 MONITOR
 45
-220
+270
 195
-265
+315
 Number of People Evacuated
 n-evacuated
 17
@@ -625,9 +629,9 @@ n-evacuated
 
 MONITOR
 45
-320
+370
 195
-365
+415
 Total Evacuation Time
 ticks
 17
@@ -636,9 +640,9 @@ ticks
 
 SLIDER
 130
-120
+170
 235
-153
+203
 door-proximity
 door-proximity
 1
@@ -651,9 +655,9 @@ HORIZONTAL
 
 TEXTBOX
 5
-60
+110
 155
-78
+128
 Build-my-own parameters:
 11
 0.0
@@ -661,9 +665,9 @@ Build-my-own parameters:
 
 SLIDER
 10
-80
+130
 125
-113
+163
 number-of-rooms
 number-of-rooms
 0
@@ -676,9 +680,9 @@ HORIZONTAL
 
 SLIDER
 130
-80
+130
 235
-113
+163
 hallway-size
 hallway-size
 3
@@ -691,18 +695,29 @@ HORIZONTAL
 
 SLIDER
 10
-120
+170
 125
-153
+203
 number-of-doors
 number-of-doors
 1
 3
-2.0
+1.0
 1
 1
 NIL
 HORIZONTAL
+
+SWITCH
+55
+65
+190
+98
+show-checkpoints
+show-checkpoints
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
