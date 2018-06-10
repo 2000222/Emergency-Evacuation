@@ -51,6 +51,7 @@ end
 
 to setup
   ca
+  resize-world -20 20 -20 20
   initialize-globals
   make-building
   make-people
@@ -534,8 +535,8 @@ end
 GRAPHICS-WINDOW
 245
 10
-682
-448
+786
+552
 -1
 -1
 13.0
@@ -548,10 +549,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--16
-16
--16
-16
+-20
+20
+-20
+20
 1
 1
 1
@@ -600,8 +601,8 @@ SLIDER
 number-of-people
 number-of-people
 1
-200
-200.0
+250
+250.0
 1
 1
 NIL
@@ -659,7 +660,7 @@ door-proximity
 door-proximity
 1
 hallway-size - 2
-2.0
+23.0
 2
 1
 NIL
@@ -698,8 +699,8 @@ SLIDER
 hallway-size
 hallway-size
 3
-21
-3.0
+25
+25.0
 2
 1
 NIL
@@ -1144,7 +1145,7 @@ NetLogo 6.0.3
       <value value="0"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="hallway-size" repetitions="10" runMetricsEveryStep="false">
+  <experiment name="hallway-size" repetitions="30" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <metric>ticks</metric>
