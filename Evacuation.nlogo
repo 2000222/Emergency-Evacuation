@@ -660,7 +660,7 @@ door-proximity
 door-proximity
 1
 hallway-size - 2
-1.0
+5.0
 2
 1
 NIL
@@ -685,7 +685,7 @@ number-of-rooms
 number-of-rooms
 0
 10
-10.0
+8.0
 2
 1
 NIL
@@ -700,7 +700,7 @@ hallway-size
 hallway-size
 3
 31
-7.0
+13.0
 2
 1
 NIL
@@ -715,7 +715,7 @@ number-of-doors
 number-of-doors
 1
 3
-1.0
+2.0
 1
 1
 NIL
@@ -728,7 +728,7 @@ SWITCH
 98
 show-checkpoints
 show-checkpoints
-1
+0
 1
 -1000
 
