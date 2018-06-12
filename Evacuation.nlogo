@@ -51,7 +51,6 @@ end
 
 to setup
   ca
-  resize-world -20 20 -20 20
   initialize-globals
   make-building
   make-people
@@ -535,8 +534,8 @@ end
 GRAPHICS-WINDOW
 245
 10
-786
-552
+682
+448
 -1
 -1
 13.0
@@ -549,10 +548,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--20
-20
--20
-20
+-16
+16
+-16
+16
 1
 1
 1
@@ -601,8 +600,8 @@ SLIDER
 number-of-people
 number-of-people
 1
-250
-250.0
+200
+200.0
 1
 1
 NIL
@@ -660,7 +659,7 @@ door-proximity
 door-proximity
 1
 hallway-size - 2
-5.0
+2.0
 2
 1
 NIL
@@ -685,7 +684,7 @@ number-of-rooms
 number-of-rooms
 0
 10
-8.0
+0.0
 2
 1
 NIL
@@ -699,8 +698,8 @@ SLIDER
 hallway-size
 hallway-size
 3
-31
-13.0
+21
+3.0
 2
 1
 NIL
@@ -728,7 +727,7 @@ SWITCH
 98
 show-checkpoints
 show-checkpoints
-0
+1
 1
 -1000
 
@@ -1101,7 +1100,7 @@ NetLogo 6.0.3
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="door-proximity" repetitions="25" runMetricsEveryStep="false">
+  <experiment name="door-proximity" repetitions="10" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <metric>ticks</metric>
@@ -1137,16 +1136,15 @@ NetLogo 6.0.3
       <value value="100"/>
       <value value="150"/>
       <value value="200"/>
-      <value value="250"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="hallway-size">
-      <value value="31"/>
+      <value value="21"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="number-of-rooms">
       <value value="0"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="hallway-size" repetitions="25" runMetricsEveryStep="false">
+  <experiment name="hallway-size" repetitions="10" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <metric>ticks</metric>
@@ -1169,7 +1167,6 @@ NetLogo 6.0.3
       <value value="100"/>
       <value value="150"/>
       <value value="200"/>
-      <value value="250"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="hallway-size">
       <value value="3"/>
@@ -1181,17 +1178,12 @@ NetLogo 6.0.3
       <value value="17"/>
       <value value="19"/>
       <value value="21"/>
-      <value value="23"/>
-      <value value="25"/>
-      <value value="27"/>
-      <value value="29"/>
-      <value value="31"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="number-of-rooms">
       <value value="10"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="number-of-rooms" repetitions="25" runMetricsEveryStep="false">
+  <experiment name="number-of-rooms" repetitions="10" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <metric>ticks</metric>
@@ -1203,7 +1195,7 @@ NetLogo 6.0.3
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="door-proximity">
-      <value value="1"/>
+      <value value="19"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="show-checkpoints">
       <value value="false"/>
@@ -1214,10 +1206,50 @@ NetLogo 6.0.3
       <value value="100"/>
       <value value="150"/>
       <value value="200"/>
-      <value value="250"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="hallway-size">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-rooms">
+      <value value="0"/>
+      <value value="2"/>
+      <value value="4"/>
+      <value value="6"/>
+      <value value="8"/>
+      <value value="10"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="hallway size vs number of rooms" repetitions="10" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>ticks</metric>
+    <metric>average-time-to-evacuate</metric>
+    <enumeratedValueSet variable="building-type">
+      <value value="&quot;build my own!&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-doors">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="door-proximity">
+      <value value="19"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-checkpoints">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-people">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hallway-size">
+      <value value="3"/>
+      <value value="5"/>
       <value value="7"/>
+      <value value="9"/>
+      <value value="11"/>
+      <value value="13"/>
+      <value value="15"/>
+      <value value="17"/>
+      <value value="19"/>
+      <value value="21"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="number-of-rooms">
       <value value="2"/>
